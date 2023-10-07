@@ -1,9 +1,14 @@
 const container = document.querySelector(".container");
-const button = document.querySelector("button");
 const setGrid = document.querySelector(".set-grid");
 const clear = document.querySelector(".clear");
+const colourBlack = document.querySelector(".colour-black");
+const colourRandom = document.querySelector(".colour-random");
 
 let chosenGrid = 16;
+let selectedColor = "black";
+let currentColour = "rgb(255, 255, 255)";
+colourBlack.addEventListener("click", () => (selectedColor = "black"));
+colourRandom.addEventListener("click", () => (selectedColor = "random"));
 
 setGrid.addEventListener("click", () => {
   container.innerHTML = "";
@@ -16,9 +21,9 @@ clear.addEventListener("click", () => {
 });
 
 function resetSize() {
-  chosenGrid = prompt("Enter grid size ");
-  if (chosenGrid > 100) {
-    chosenGrid = 100;
+  chosenGrid = prompt("Enter grid size (Max amount: 50) ");
+  if (chosenGrid > 50) {
+    chosenGrid = 50;
   }
   container.style.gridTemplateRows = `repeat(${chosenGrid}, 1fr)`;
   container.style.gridTemplateColumns = `repeat(${chosenGrid}, 1fr)`;
@@ -30,13 +35,38 @@ function createGrid(size) {
     const box = document.createElement("div");
     box.className = "box";
     box.style.border = "1px solid black";
-    box.style.background = "white";
     container.appendChild(box);
   }
+
+  function colourProgress() {
+    if (colourPercentage > 0) {
+      return (colourPercentage = colourPercentage - 10);
+    } else {
+      return (colourPercentage = 100);
+    }
+  }
+
   const boxes = document.querySelectorAll(".box");
   boxes.forEach((box) => {
+    box.style.filter = "brightness(100%)";
     box.addEventListener("mouseover", (e) => {
-      box.style.background = "black";
+      switch (selectedColor) {
+        case "black":
+          box.style.background = currentColour;
+
+          let percentage = box.style.filter.replace(/\D+/g, "");
+          if (percentage <= 100) {
+            box.style.filter = `brightness(${percentage - 10}%)`;
+          }
+          break;
+        case "random":
+          box.style.background = `rgb(${Math.floor(
+            Math.random() * 255
+          )}, ${Math.floor(Math.random() * 255)}, ${Math.floor(
+            Math.random() * 255
+          )})`;
+          break;
+      }
     });
   });
 }
